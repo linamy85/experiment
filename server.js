@@ -42,7 +42,8 @@ var app = require('http').createServer(function (request, response) {
     });
 });
 
-app.listen(8080);
+var port = process.env.PORT | 5000;
+app.listen( port );
 
 // npm install reliable-signaler
 require('reliable-signaler')(app);

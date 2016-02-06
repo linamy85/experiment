@@ -1,49 +1,48 @@
-var static = require('node-static');
-var http = require('http');
-var file = new(static.Server)();
-var app = http.createServer(function (req, res) {
-  file.serve(req, res);
-}).listen(2013);
+// Muaz Khan   - www.MuazKhan.com
+// MIT License - www.WebRTC-Experiment.com/licence
 
-var io = require('socket.io').listen(app);
+var path = require("path"),
+    fs = require("fs");
 
-io.sockets.on('connection', function (socket){
+var app = require('http').createServer(function (request, response) {
+    var uri = require('url').parse(request.url).pathname,
+        filename = path.join(process.cwd(), uri);
 
-  // convenience function to log server messages on the client
-	function log(){
-		var array = [">>> Message from server: "];
-	  for (var i = 0; i < arguments.length; i++) {
-	  	array.push(arguments[i]);
-	  }
-	    socket.emit('log', array);
-	}
+    fs.exists(filename, function (exists) {
+        var contentType = {
+            "Content-Type": "text/plain"
+        };
 
-	socket.on('message', function (message) {
-		log('Got message:', message);
-    // for a real app, would be room only (not broadcast)
-		socket.broadcast.emit('message', message);
-	});
+        if (!exists) {
+            response.writeHead(404, contentType);
+            response.write('404 Not Found: ' + filename + '\n');
+            response.end();
+            return;
+        }
 
-	socket.on('create or join', function (room) {
-		var numClients = io.sockets.clients(room).length;
+        if (fs.statSync(filename).isDirectory()) {
+            contentType = {
+                "Content-Type": "text/html"
+            };
+            filename += '/index.html';
+        }
 
-		log('Room ' + room + ' has ' + numClients + ' client(s)');
-		log('Request to create or join room ' + room);
+        fs.readFile(filename, 'binary', function (err, file) {
+            if (err) {
+                response.writeHead(500, contentType);
+                response.write(err + "\n");
+                response.end();
+                return;
+            }
 
-		if (numClients === 0){
-			socket.join(room);
-			socket.emit('created', room);
-		} else if (numClients === 1) {
-			io.sockets.in(room).emit('join', room);
-			socket.join(room);
-			socket.emit('joined', room);
-		} else { // max two clients
-			socket.emit('full', room);
-		}
-		socket.emit('emit(): client ' + socket.id + ' joined room ' + room);
-		socket.broadcast.emit('broadcast(): client ' + socket.id + ' joined room ' + room);
-
-	});
-
+            response.writeHead(200, contentType);
+            response.write(file, 'binary');
+            response.end();
+        });
+    });
 });
 
+app.listen(8080);
+
+// npm install reliable-signaler
+require('reliable-signaler')(app);

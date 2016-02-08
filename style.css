@@ -1,3 +1,9 @@
+
+.fb-like {
+    right: -15px;
+    position: relative;
+    text-align: right;
+}
 button, input, select {
     font-family: Myriad, Arial, Verdana;
     font-weight: normal;
@@ -35,6 +41,7 @@ button[disabled], input[disabled], select[disabled] {
     border-bottom: 1px solid black;
     padding: 3px 5px;
 }
+
 
 video {
     width: 26%;

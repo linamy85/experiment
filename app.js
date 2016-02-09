@@ -1,4 +1,3 @@
-
 var express           =     require('express')
   , passport          =     require('passport')
   , util              =     require('util')
@@ -6,21 +5,16 @@ var express           =     require('express')
   , session           =     require('express-session')
   , cookieParser      =     require('cookie-parser')
   , bodyParser        =     require('body-parser')
-  , config            =     require('./config')
+  , config            =     require('./config/config')
   , logger            =     require('morgan')
-  //, mysql             =     require('mysql')
   , path              =     require('path')
   , favicon           =     require('serve-favicon')
   , app               =     express()
-  //, httpServer        =     require('http').Server(app);
+  , DBconfig          =     require('./config/db')
+  , mongoose          =     require('mongoose');
 
-//require('reliable-signaler')( httpServer );
-
-
-
-var routes = require('./routes/index');
-var users = require('./routes/users');
-
+// connect to mongoDB database
+mongoose.connect(DBconfig.url);
 
 
 // view engine setup
@@ -33,10 +27,26 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+// TODO: why need this?
+app.use(session({ secret: 'amy22627683', key: 'ntuaf'}));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+ // Using the flash middleware provided by connect-flash to store messages in session
+ // and displaying in templates
+var flash = require('connect-flash');
+app.use(flash());
+
+
+// Initialize Passport
+var initPassport = require('./passport/init');
+initPassport(passport);
+
+
+var routes = require('./routes/index')(passport);
 app.use('/', routes);
-app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -45,7 +55,7 @@ app.use(function(req, res, next) {
   next(err);
 });
 
-// error handlers
+//=========  error handlers  ===========
 
 // development error handler
 // will print stacktrace
@@ -68,62 +78,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
-
-
-// Passport session setup.
-passport.serializeUser(function(user, done) {
-  done(null, user);
-});
-passport.deserializeUser(function(obj, done) {
-  done(null, obj);
-});
-// Use the FacebookStrategy within Passport.
-passport.use(new FacebookStrategy({
-    clientID: config.facebook_api_key,
-    clientSecret:config.facebook_api_secret ,
-    callbackURL: config.callback_url
-  },
-  function(accessToken, refreshToken, profile, done) {
-    process.nextTick(function () {
-      //Check whether the User exists or not using profile.id
-      //Further DB code.
-      return done(null, profile);
-    });
-  }
-));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(session({ secret: 'keyboard cat', key: 'sid'}));
-app.use(passport.initialize());
-app.use(passport.session());
-
-//Router code
-app.get('/', function(req, res){
-  res.render('index', { user: req.user });
-});
-app.get('/account', ensureAuthenticated, function(req, res){
-  res.render('account', { user: req.user });
-});
-
-
-//Passport Router
-app.get('/auth/facebook', passport.authenticate('facebook'));
-app.get('/auth/facebook/callback',
-  passport.authenticate('facebook', { 
-       successRedirect : '/', 
-       failureRedirect: '/login' 
-  }),
-  function(req, res) {
-    res.redirect('/');
-  });
-app.get('/logout', function(req, res){
-  req.logout();
-  res.redirect('/');
-});
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { return next(); }
-  res.redirect('/login');
-}
-
 
 module.exports = app;

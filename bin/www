@@ -5,9 +5,8 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('experiment:server');
+var debug = require('debug')('passport-mongo');
 var http = require('http');
-var config = require('../config');
 
 /**
  * Get port from environment and store in Express.

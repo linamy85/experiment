@@ -1,17 +1,13 @@
 {
-  "name": "rtcmulticonnection-client",
+  "name": "NTUAF-control",
   "preferGlobal": true,
-  "version": "1.0.5",
-  "author": "Muaz Khan <muazkh@gmail.com> (http://www.muazkhan.com/)",
-  "description": "Reliable signaling implementation for RTCMultiConnection.js",
+  "version": "0.0.0",
+  "author": "Amy Lin <linamy85@gmail.com> ",
+  "description": "Web interface of NTUAF control project",
   "scripts": {
-    "start": "node server.js"
+    "start": "node ./bin/www"
   },
   "main": "./server.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/muaz-khan/Reliable-Signaler.git"
-  },
   "keywords": [
     "webrtc",
     "signaler",
@@ -19,21 +15,23 @@
     "reliable",
     "javascript",
     "rtcmulticonnection",
-    "webrtc-experiment",
-    "muaz",
-    "muaz-khan"
+    "NTUAF",
+    "Control"
   ],
   "analyze": false,
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/muaz-khan/Reliable-Signaler/issues",
-    "email": "muazkh@gmail.com"
-  },
-  "homepage": "http://www.RTCMultiConnection.org",
-  "_from": "rtcmulticonnection-client@",
   "dependencies": {
+    "body-parser": "~1.13.2",
+    "cookie-parser": "~1.3.5",
+    "debug": "~2.2.0",
+    "ejs": "1.0.0",
+    "express": "~4.13.1",
+    "express-session": "1.7.6",
+    "morgan": "~1.6.1",
+    "passport": "0.2.1",
+    "passport-facebook": "^2.1.0",
     "reliable-signaler": "1.0.2",
-    "socket.io": "0.9.x"
-  },
-  "devDependencies": {}
+    "serve-favicon": "~2.3.0",
+    "socket.io": "^0.9.17"
+  }
 }

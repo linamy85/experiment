@@ -9,7 +9,7 @@
 
   <body>
     <div id="fb-root"></div>
-    <script src="fb.js"></script>
+    <script src="/javascripts/fb.js"></script>
 
     <hr>
     <table class="table" align="right">
@@ -20,6 +20,21 @@
             data-href="http://amy-chatroom.herokuapp.com/" 
             data-layout="standard" 
             data-action="like" data-show-faces="true" data-share="true"></div>
+        </td>
+        <td>
+          <% if (! locals['user']) { %>
+            <div style="width:500px;height:180px;">
+              <h2 style="font-size:40px;">Welcome! Please log in.</h2>
+              <a href="/auth/facebook">
+                <img src="/images/fb-login.png">
+              </a>
+            </div>
+          <% } else { %>
+            <h2>Hello, <%= user.username %>.</h2>
+            <p>ID: <%= user.id %></p>
+            <p>Username: <%= user.username %></p>
+            <p>Name :<%= user.displayName %></p>
+          <% } %>
         </td>
       </tr>
 
@@ -37,13 +52,13 @@
       <div class="chat-output"></div>
     </div>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
 
     <script src="/reliable-signaler/signaler.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://cdn.webrtc-experiment.com/RTCMultiConnection.js"></script>
     <script src="https://cdn.webrtc-experiment.com/FileBufferReader.js"></script>
-    <script src="videoChat.js"></script>
+    <script src="/javascripts/videoChat.js"></script>
 
   </body>
 </html>
